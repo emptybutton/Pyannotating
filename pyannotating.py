@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Union, Iterable, Optional, Self, Mapping, Final
+from typing import Union, Iterable, Optional, Self, Mapping, Final, Callable, _UnionGenericAlias
 
 
 class AnnotationFactory(ABC):
@@ -104,8 +104,13 @@ class CustomAnnotationFactory(AnnotationFactory):
                     annotation,
                     replacement_annotation
                 )
-            elif type(annotation) is Union or type(annotation) is type(int | float):
-                annotation = Union[*self.__get_formatted_annotations_from(annotation.__args__)]
+            elif type(annotation) in (Union, _UnionGenericAlias, type(int | float)):
+                annotation = Union[
+                    *self.__get_formatted_annotations_from(
+                        annotation.__args__,
+                        replacement_annotation
+                    )
+                ]
 
             formatted_annotations.append(annotation)
 
