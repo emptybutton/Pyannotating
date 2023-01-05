@@ -60,7 +60,6 @@ class CustomAnnotationFactory(AnnotationFactory):
     arguments and their subcollections with the input annotation.
     """
 
-
     def __init__(self, original_factory: Mapping, annotations: Iterable):
         self._original_factory = original_factory
         self._annotations = tuple(annotations)
