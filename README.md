@@ -25,17 +25,20 @@ Callable[[int | float], any]
 
 Also you can use Union with input_annotation
 ```python
-summator_of = CustomAnnotationFactory(Callable, [[input_annotation | str, input_annotation | int], str | int])
+summator_of = CustomAnnotationFactory(Callable, [[input_annotation | int, input_annotation], int])
 summator_of[SomeCustomNumber]
 ```
 
 What results in
 ```python
-Callable[[SomeCustomNumber | str, SomeCustomNumber | int], str | int]
+Callable[[SomeCustomNumber | int, SomeCustomNumber], int]
 ```
 
 Ultimately you can annotate by the results of factories
 ```python
-def some_operation_by(main: handler_of[int | float], *middleware: summator_of[SomeCustomNumber]) -> handler_of[int | float]:
+def some_operation_by(
+    main: handler_of[int | float],
+    *middleware: summator_of[SomeCustomNumber]
+) -> handler_of[int | float]:
     ...
 ```
