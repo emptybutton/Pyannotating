@@ -86,3 +86,6 @@ class CustomAnnotationFactory(AnnotationFactory):
 
         return formatted_collection
 
+
+input_annotation: Final[str] = CustomAnnotationFactory.input_annotation_annotation
+
