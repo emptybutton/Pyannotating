@@ -68,6 +68,28 @@ class CustomAnnotationFactory(AnnotationFactory):
             *self.__get_formatted_annotations_from(self._annotations, annotation)
         ]
 
+    def __get_formatted_annotations_from(self, annotations: Iterable, replacement_annotation: any) -> tuple:
+        """
+        Recursive function to replace element(s) of the input collection (and
+        its subcollections) equal to the annotation anonation with the input
+        annotation.
+        """
+
+        formatted_annotations = list()
+
+        for annotation in annotations:
+            if annotation == self.input_annotation_annotation:
+                annotation = replacement_annotation
+            elif isinstance(annotation, Iterable) and not isinstance(annotation, str):
+                annotation = self.__get_formatted_annotations_from(
+                    annotation,
+                    replacement_annotation
+                )
+
+            formatted_annotations.append(annotation)
+
+        return tuple(formatted_annotations)
+
     def __recursively_format(self, collection: Iterable) -> list:
         """
         Method for formatting the elements of a collection (and all of its
