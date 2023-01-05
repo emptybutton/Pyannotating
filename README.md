@@ -3,7 +3,7 @@ Allows you to create similar annotations without copying them all the time.<br>
 It is advisable to place annotations created using this library in annotations.py file.
 
 ### Installation
-`pip install Pyannotating`
+`pip install pyannotating`
 
 ### Examples
 Creating a factory of your annotations
