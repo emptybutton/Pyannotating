@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Mapping, Final
+from typing import Union, Iterable, Optional, Self, Mapping, Final
 
 
 class AnnotationFactory(ABC):
@@ -25,16 +25,33 @@ class AnnotationFactory(ABC):
         """Annotation Creation Method from an input annotation."""
 
 
+class InputAnnotationAnnotation:
+    """
+    Singleton class for the annotation of the conditional empty space, in which
+    the input type in the CustomAnnotationFactory should be placed.
+    """
+
+    _instance: Optional[Self] = None
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance') or cls._instance is None:
+            cls._instance = object.__new__(cls, *args, **kwargs)
+
+        return cls._instance
+
+    def __repr__(self) -> str:
+        return '<input_annotation>'
+
+
 class CustomAnnotationFactory(AnnotationFactory):
     """
     AnnotationFactory class delegating the construction of another factory's
     annotation.
 
-    When called, replaces the 'annotation' strings from its arguments and their
-    subcollections with the input annotation.
+    When called, replaces the InputAnnotationAnnotation instances from its
+    arguments and their subcollections with the input annotation.
     """
 
-    _input_annotation_annotation: str = '<input_annotation>'
 
     def __init__(self, original_factory: Mapping, annotations: Iterable):
         self._original_factory = original_factory
@@ -47,11 +64,6 @@ class CustomAnnotationFactory(AnnotationFactory):
     @property
     def annotations(self) -> tuple:
         return self._annotations
-
-    @classmethod
-    @property
-    def input_annotation_annotation(cls) -> str:
-        return cls._input_annotation_annotation
 
     def __repr__(self) -> str:
         return "{factory}{arguments}".format(
@@ -78,7 +90,7 @@ class CustomAnnotationFactory(AnnotationFactory):
         formatted_annotations = list()
 
         for annotation in annotations:
-            if annotation == self.input_annotation_annotation:
+            if isinstance(annotation, InputAnnotationAnnotation):
                 annotation = replacement_annotation
             elif isinstance(annotation, Iterable) and not isinstance(annotation, str):
                 annotation = self.__get_formatted_annotations_from(
@@ -109,5 +121,5 @@ class CustomAnnotationFactory(AnnotationFactory):
         return formatted_collection
 
 
-input_annotation: Final[str] = CustomAnnotationFactory.input_annotation_annotation
-
+# Pre-created instance without permanent formal creation of a new one.
+input_annotation: Final[InputAnnotationAnnotation] = InputAnnotationAnnotation()
