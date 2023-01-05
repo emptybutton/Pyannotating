@@ -29,6 +29,8 @@ class InputAnnotationAnnotation:
     """
     Singleton class for the annotation of the conditional empty space, in which
     the input type in the CustomAnnotationFactory should be placed.
+
+    Supports | to create Union type.
     """
 
     _instance: Optional[Self] = None
@@ -41,6 +43,12 @@ class InputAnnotationAnnotation:
 
     def __repr__(self) -> str:
         return '<input_annotation>'
+
+    def __or__(self, other: any) -> Union:
+        return Union[self, other]
+
+    def __ror__(self, other: any) -> Union:
+        return Union[other, self]
 
 
 class CustomAnnotationFactory(AnnotationFactory):
@@ -97,6 +105,8 @@ class CustomAnnotationFactory(AnnotationFactory):
                     annotation,
                     replacement_annotation
                 )
+            elif type(annotation) is Union or type(annotation) is type(int | float):
+                annotation = Union[*self.__get_formatted_annotations_from(annotation.__args__)]
 
             formatted_annotations.append(annotation)
 
