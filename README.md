@@ -34,7 +34,7 @@ What results in
 Callable[[SomeCustomNumber | str, SomeCustomNumber | int], str | int]
 ```
 
-Ultimately you can annotate by the resulting annotations
+Ultimately you can annotate by the results of factories
 ```python
 def some_operation_by(main: handler_of[int | float], *middleware: summator_of[SomeCustomNumber]) -> handler_of[int | float]:
     ...
