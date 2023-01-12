@@ -34,11 +34,19 @@ What results in
 Callable[[SomeCustomNumber | int, SomeCustomNumber], int]
 ```
 
-Ultimately you can annotate by the results of factories
+In addition, you can also annotate something regardless of its type
+```python
+even = FormalAnnotation("Formal annotation of even numbers.")
+
+number: even[int | float] = 42
+```
+
+Full example
 ```python
 def some_operation_by(
-    main: handler_of[int | float],
-    *middleware: summator_of[SomeCustomNumber]
+    handler: handler_of[int | float],
+    number: even[float],
+    *middleware_handlers: summator_of[SomeCustomNumber]
 ) -> handler_of[int | float]:
     ...
 ```
