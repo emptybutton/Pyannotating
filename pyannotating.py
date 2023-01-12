@@ -1,5 +1,26 @@
 from abc import ABC, abstractmethod
-from typing import Union, Iterable, Optional, Self, Mapping, Final, Callable, _UnionGenericAlias
+from typing import Optional, Union, Iterable, Self, Mapping, Final, Callable, _UnionGenericAlias
+
+
+class FormalAnnotation:
+    """
+    Class allowing to formally specify additional information about the input
+    resource.
+
+    When annotating, returns the input.
+
+    Can be called via [] with some resource.
+    """
+
+    def __init__(self, instance_doc: Optional[str] = None):
+        if instance_doc is not None:
+            self.__doc__ = instance_doc
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
+    def __getitem__(self, resource: any) -> any:
+        return resource
 
 
 class AnnotationFactory(ABC):
