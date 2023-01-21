@@ -79,6 +79,8 @@ class AnnotationTemplate(AnnotationFactory):
 
     When called, replaces the InputAnnotationAnnotation instances from its
     arguments and their subcollections with the input annotation.
+
+    Templateizes Union.
     """
 
     def __init__(self, original_factory: Mapping, annotations: Iterable):
