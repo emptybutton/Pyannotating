@@ -19,3 +19,23 @@ def test_formal_annotation(input_resource: Any, result: Any):
 )
 def test_formal_annotation_documenting(doc: str):
     assert FormalAnnotation(doc).__doc__ == doc
+
+
+@mark.parametrize('number_of_creation', [8])
+def test_input_annotation_annotation_loneliness(number_of_creation: int):
+    annotations = tuple(InputAnnotationAnnotation() for _ in range(number_of_creation))
+
+    for first_annotation_index in range(number_of_creation):
+        for second_annotation in annotations[first_annotation_index + 1:]:
+            assert annotations[first_annotation_index] is second_annotation
+
+
+@mark.parametrize(
+    "type_to_group",
+    [int, float, int | float, Union[set, frozenset], Optional[tuple], InputAnnotationAnnotation]
+)
+def test_input_annotation_annotation_grouping(type_to_group: type):
+    annotation = InputAnnotationAnnotation()
+
+    assert annotation | type_to_group == Union[annotation, type_to_group]
+    assert type_to_group | annotation == Union[type_to_group | annotation]
