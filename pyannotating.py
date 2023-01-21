@@ -109,8 +109,12 @@ class AnnotationTemplate(AnnotationFactory):
         )
 
     def _create_full_annotation_by(self, annotation: Any) -> Any:
+        formatted_annotations = self.__get_formatted_annotations_from(self._annotations, annotation)
+
         return self._original_factory[
-            *self.__get_formatted_annotations_from(self._annotations, annotation)
+            formatted_annotations[0]
+            if len(formatted_annotations) == 1
+            else formatted_annotations
         ]
 
     def __get_formatted_annotations_from(self, annotations: Iterable, replacement_annotation: Any) -> tuple:
