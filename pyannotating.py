@@ -72,7 +72,7 @@ class InputAnnotationAnnotation:
         return Union[other, self]
 
 
-class CustomAnnotationFactory(AnnotationFactory):
+class AnnotationTemplate(AnnotationFactory):
     """
     AnnotationFactory class delegating the construction of another factory's
     annotation.
