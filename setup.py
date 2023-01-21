@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyannotating'
 
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 
 with open('README.md') as readme_file:
     LONG_DESCRIPTION = readme_file.read()
