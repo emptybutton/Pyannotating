@@ -39,3 +39,26 @@ def test_input_annotation_annotation_grouping(type_to_group: type):
 
     assert annotation | type_to_group == Union[annotation, type_to_group]
     assert type_to_group | annotation == Union[type_to_group | annotation]
+
+
+@mark.parametrize(
+    "annotation_template, input_resource, result",
+    [
+        (AnnotationTemplate(Optional, [input_annotation]), int, Optional[int]),
+        (
+            AnnotationTemplate(Callable, [[input_annotation | int, input_annotation], Any]),
+            float,
+            Callable[[float | int, float], Any]
+        ),
+        (
+            AnnotationTemplate(
+                Callable,
+                [[input_annotation], AnnotationTemplate(Optional, [input_annotation])]
+            ),
+            str,
+            Callable[[str], Optional[str]]
+        ),
+    ]
+)
+def test_annotation_template(annotation_template: AnnotationTemplate, input_resource: Any, result: Any):
+    assert annotation_template[input_resource] == result
