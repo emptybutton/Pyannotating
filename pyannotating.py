@@ -170,6 +170,30 @@ class AnnotationTemplate(AnnotationFactory):
         return formatted_collection
 
 
+class Special:
+    """
+    Annotation class for formally specifying specific behavior for subclasses.
+
+    Returns the second input annotation, or Any if none.
+
+    Specifies additional behavior for the first annotation.
+
+    Implies use like Special[type_for_special_behavior, generic_type] or
+    Special[type_for_special_behavior].
+    """
+
+    def __class_getitem__(cls, annotation_resource: tuple[Any, Any] | Any) -> Any:
+        if not isinstance(annotation_resource, Iterable):
+            return Any
+
+        elif len(annotation_resource) != 2:
+            raise TypeError(
+                "Special must be used as Special[type_for_special_behavior, generic_type] or Special[type_for_special_behavior]"
+            )
+
+        return annotation_resource[1]
+
+
 # Pre-created instance without permanent formal creation of a new one.
 input_annotation: Final[InputAnnotationAnnotation] = InputAnnotationAnnotation()
 
