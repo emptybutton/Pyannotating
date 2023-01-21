@@ -81,6 +81,9 @@ class AnnotationTemplate(AnnotationFactory):
     arguments and their subcollections with the input annotation.
 
     Templateizes Union.
+
+    Delegates responsibilities to other templates when passing them as
+    annotations.
     """
 
     def __init__(self, original_factory: Mapping, annotations: Iterable):
@@ -128,6 +131,9 @@ class AnnotationTemplate(AnnotationFactory):
                     annotation,
                     replacement_annotation
                 )
+
+            elif isinstance(annotation, AnnotationTemplate):
+                annotation = annotation[replacement_annotation]
 
             elif type(annotation) in (Union, _UnionGenericAlias, type(int | float)):
                 annotation = Union[
