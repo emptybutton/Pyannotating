@@ -1,52 +1,75 @@
 ## Pyannotating
-Allows you to create similar annotations without copying them all the time.<br>
-It is advisable to place annotations created using this library in annotations.py file.
+Allows you to structure your annotations and put more information into them.<br>
+Templates created with this library should preferably be placed in the annotations.py file.
 
 ### Installation
 `pip install pyannotating`
 
-### Examples
-Creating a factory of your annotations
+### Features
+You can create a template of your annotations
 ```python
-from pyannotating import CustomAnnotationFactory, input_annotation
-from typing import Callable
+from pyannotating import *
+from typing import Callable, Any, Optional, Iterable
 
-handler_of = CustomAnnotationFactory(Callable, [[input_annotation], any])
+handler_of = AnnotationTemplate(Callable, [[input_annotation], Any])
 ```
-Now you can create an annotation by this factory
+and then create an annotation by this template
 ```python
 handler_of[int | float]
 ```
 
-What is equivalent
+what is equivalent
 ```python
-Callable[[int | float], any]
+Callable[[int | float], Any]
 ```
 
-Also you can use Union with input_annotation
+Also you can nest templates inside each other
 ```python
-summator_of = CustomAnnotationFactory(Callable, [[input_annotation | int, input_annotation], int])
-summator_of[SomeCustomNumber]
+optional_handler_of = AnnotationTemplate(
+    Callable,
+    [[input_annotation], AnnotationTemplate(Optional, [input_annotation])]
+)
+
+optional_handler_of[int]
 ```
 
-What results in
+what results in
 ```python
-Callable[[SomeCustomNumber | int, SomeCustomNumber], int]
+Callable[[int], Optional[int]]
 ```
 
-In addition, you can also annotate something regardless of its type
+and use input_annotation in conjunction with something else
+```python
+summator_of = AnnotationTemplate(Callable, [[input_annotation | int, input_annotation], int])
+summator_of[float]
+```
+
+to get
+```python
+Callable[[float | int, float], int]
+```
+
+In addition, you can integrate comments with your annotations
 ```python
 even = FormalAnnotation("Formal annotation of even numbers.")
 
 number: even[int | float] = 42
 ```
 
-Full example
+or annotate downcasts
 ```python
-def some_operation_by(
-    handler: handler_of[int | float],
-    number: even[float],
-    *middleware_handlers: summator_of[SomeCustomNumber]
-) -> handler_of[int | float]:
+def transform(collection: Special[range, Iterable]) -> Any:
     ...
+```
+
+or just use some pre-made templates
+```python
+many_or_one[Callable]
+method_of[int]
+```
+
+for getting
+```python
+Callable | Iterable[Callable]
+Callable[[int, ...], Any]
 ```

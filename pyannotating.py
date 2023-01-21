@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Iterable, Self, Mapping, Final, Callable, _UnionGenericAlias
+from typing import Optional, Any, Union, Iterable, Self, Mapping, Final, Callable, _UnionGenericAlias
 
 
 class FormalAnnotation:
@@ -19,7 +19,7 @@ class FormalAnnotation:
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
 
-    def __getitem__(self, resource: any) -> any:
+    def __getitem__(self, resource: Any) -> Any:
         return resource
 
 
@@ -31,10 +31,10 @@ class AnnotationFactory(ABC):
     Can be used via [] (preferred) or by normal call.
     """
 
-    def __call__(self, annotation: any) -> any:
+    def __call__(self, annotation: Any) -> Any:
         return self._create_full_annotation_by(annotation)
 
-    def __getitem__(self, annotation: any) -> any:
+    def __getitem__(self, annotation: Any) -> Any:
         return self._create_full_annotation_by(
             Union[annotation]
             if isinstance(annotation, Iterable)
@@ -42,7 +42,7 @@ class AnnotationFactory(ABC):
         )
 
     @abstractmethod
-    def _create_full_annotation_by(self, annotation: any) -> any:
+    def _create_full_annotation_by(self, annotation: Any) -> Any:
         """Annotation Creation Method from an input annotation."""
 
 
@@ -65,20 +65,25 @@ class InputAnnotationAnnotation:
     def __repr__(self) -> str:
         return '<input_annotation>'
 
-    def __or__(self, other: any) -> Union:
+    def __or__(self, other: Any) -> Union:
         return Union[self, other]
 
-    def __ror__(self, other: any) -> Union:
+    def __ror__(self, other: Any) -> Union:
         return Union[other, self]
 
 
-class CustomAnnotationFactory(AnnotationFactory):
+class AnnotationTemplate(AnnotationFactory):
     """
     AnnotationFactory class delegating the construction of another factory's
     annotation.
 
     When called, replaces the InputAnnotationAnnotation instances from its
     arguments and their subcollections with the input annotation.
+
+    Templateizes Union.
+
+    Delegates responsibilities to other templates when passing them as
+    annotations.
     """
 
     def __init__(self, original_factory: Mapping, annotations: Iterable):
@@ -103,12 +108,16 @@ class CustomAnnotationFactory(AnnotationFactory):
             arguments=str(self.__recursively_format(self._annotations)).replace('\'', str())
         )
 
-    def _create_full_annotation_by(self, annotation: any) -> any:
+    def _create_full_annotation_by(self, annotation: Any) -> Any:
+        formatted_annotations = self.__get_formatted_annotations_from(self._annotations, annotation)
+
         return self._original_factory[
-            *self.__get_formatted_annotations_from(self._annotations, annotation)
+            formatted_annotations[0]
+            if len(formatted_annotations) == 1
+            else formatted_annotations
         ]
 
-    def __get_formatted_annotations_from(self, annotations: Iterable, replacement_annotation: any) -> tuple:
+    def __get_formatted_annotations_from(self, annotations: Iterable, replacement_annotation: Any) -> tuple:
         """
         Recursive function to replace element(s) of the input collection (and
         its subcollections) equal to the annotation anonation with the input
@@ -120,11 +129,16 @@ class CustomAnnotationFactory(AnnotationFactory):
         for annotation in annotations:
             if isinstance(annotation, InputAnnotationAnnotation):
                 annotation = replacement_annotation
+
             elif isinstance(annotation, Iterable) and not isinstance(annotation, str):
                 annotation = self.__get_formatted_annotations_from(
                     annotation,
                     replacement_annotation
                 )
+
+            elif isinstance(annotation, AnnotationTemplate):
+                annotation = annotation[replacement_annotation]
+
             elif type(annotation) in (Union, _UnionGenericAlias, type(int | float)):
                 annotation = Union[
                     *self.__get_formatted_annotations_from(
@@ -156,7 +170,43 @@ class CustomAnnotationFactory(AnnotationFactory):
         return formatted_collection
 
 
+class Special:
+    """
+    Annotation class for formally specifying specific behavior for subclasses.
+
+    Returns the second input annotation, or Any if none.
+
+    Specifies additional behavior for the first annotation.
+
+    Implies use like Special[type_for_special_behavior, generic_type] or
+    Special[type_for_special_behavior].
+    """
+
+    def __class_getitem__(cls, annotation_resource: tuple[Any, Any] | Any) -> Any:
+        if not isinstance(annotation_resource, Iterable):
+            return Any
+
+        elif len(annotation_resource) != 2:
+            raise TypeError(
+                "Special must be used as Special[type_for_special_behavior, generic_type] or Special[type_for_special_behavior]"
+            )
+
+        return annotation_resource[1]
+
+
+number: Final = int | float | complex
+
 # Pre-created instance without permanent formal creation of a new one.
 input_annotation: Final[InputAnnotationAnnotation] = InputAnnotationAnnotation()
 
-number: Final = int | float | complex
+
+many_or_one: Final[AnnotationTemplate] = AnnotationTemplate(
+    Union,
+    [input_annotation, AnnotationTemplate(Iterable, [input_annotation])]
+)
+
+
+method_of: Final[AnnotationTemplate] = AnnotationTemplate(
+    Callable,
+    [[input_annotation, ...], Any]
+)
