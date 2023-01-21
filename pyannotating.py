@@ -120,11 +120,13 @@ class CustomAnnotationFactory(AnnotationFactory):
         for annotation in annotations:
             if isinstance(annotation, InputAnnotationAnnotation):
                 annotation = replacement_annotation
+
             elif isinstance(annotation, Iterable) and not isinstance(annotation, str):
                 annotation = self.__get_formatted_annotations_from(
                     annotation,
                     replacement_annotation
                 )
+
             elif type(annotation) in (Union, _UnionGenericAlias, type(int | float)):
                 annotation = Union[
                     *self.__get_formatted_annotations_from(
