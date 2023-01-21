@@ -62,3 +62,11 @@ def test_input_annotation_annotation_grouping(type_to_group: type):
 )
 def test_annotation_template(annotation_template: AnnotationTemplate, input_resource: Any, result: Any):
     assert annotation_template[input_resource] == result
+
+
+@mark.parametrize(
+    "input_resource, result",
+    [(int, Any), ((tuple | list, Iterable), Iterable), ((str, Sized), Sized)]
+)
+def test_special(input_resource: Any, result: Any):
+    assert Special[input_resource] == result
