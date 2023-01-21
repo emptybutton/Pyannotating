@@ -199,3 +199,8 @@ number: Final = int | float | complex
 # Pre-created instance without permanent formal creation of a new one.
 input_annotation: Final[InputAnnotationAnnotation] = InputAnnotationAnnotation()
 
+
+many_or_one: Final[AnnotationTemplate] = AnnotationTemplate(
+    Union,
+    [input_annotation, AnnotationTemplate(Iterable, [input_annotation])]
+)
