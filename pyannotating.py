@@ -194,7 +194,8 @@ class Special:
         return annotation_resource[1]
 
 
+number: Final = int | float | complex
+
 # Pre-created instance without permanent formal creation of a new one.
 input_annotation: Final[InputAnnotationAnnotation] = InputAnnotationAnnotation()
 
-number: Final = int | float | complex
