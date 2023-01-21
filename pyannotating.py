@@ -204,3 +204,9 @@ many_or_one: Final[AnnotationTemplate] = AnnotationTemplate(
     Union,
     [input_annotation, AnnotationTemplate(Iterable, [input_annotation])]
 )
+
+
+method_of: Final[AnnotationTemplate] = AnnotationTemplate(
+    Callable,
+    [[input_annotation, ...], Any]
+)
