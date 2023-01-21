@@ -10,7 +10,7 @@ with open('README.md') as readme_file:
 
 setup(
     name=PACKAGE_NAME,
-    description="Library for convenient generation of annotations for your code",
+    description="Library to structure annotations in your code",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     license_files = ('LICENSE',),
