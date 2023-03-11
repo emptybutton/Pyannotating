@@ -73,16 +73,16 @@ class AnnotationTemplate(_AnnotationFactory):
     annotations.
     """
 
-        self._original_factory = original_factory
     def __init__(self, factory: _ItemStorage, annotations: list):
+        self._factory = factory
         self._annotations = tuple(annotations)
 
     def __repr__(self) -> str:
         return "{factory}{arguments}".format(
             factory=(
-                self._original_factory.__name__
-                if hasattr(self._original_factory, '__name__')
-                else self._original_factory
+                self._factory.__name__
+                if hasattr(self._factory, '__name__')
+                else self._factory
             ),
             arguments=str(self.__recursively_format(self._annotations)).replace('\'', str())
         )
@@ -90,7 +90,7 @@ class AnnotationTemplate(_AnnotationFactory):
     def _create_full_annotation_by(self, annotation: Any) -> Any:
         formatted_annotations = self.__get_formatted_annotations_from(self._annotations, annotation)
 
-        return self._original_factory[
+        return self._factory[
             formatted_annotations[0]
             if len(formatted_annotations) == 1
             else formatted_annotations
