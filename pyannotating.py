@@ -2,6 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Optional, Any, Union, Iterable, Self, Protocol, Final, TypeVar, Generic, Type, Callable, _UnionGenericAlias
 
 
+__all__ = (
+    "AnnotationTemplate", "FormalAnnotation", "Special", "Subgroup", 
+    "input_annotation", "number", "many_or_one", "method_of"
+)
 
 
 class _AnnotationFactory(ABC):
