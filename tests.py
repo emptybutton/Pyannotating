@@ -1,8 +1,8 @@
-from typing import Any, Union, Optional, Callable, Iterable, Sized
+from typing import Any, Union, Optional, Callable, Iterable, Literal, Sized
 
 from pytest import mark
 
-from pyannotating import FormalAnnotation, InputAnnotationAnnotation, AnnotationTemplate, input_annotation, Special
+from pyannotating import FormalAnnotation, AnnotationTemplate, input_annotation, Special, Subgroup, _InputAnnotationAnnotation
 
 
 @mark.parametrize(
@@ -23,7 +23,7 @@ def test_formal_annotation_documenting(doc: str):
 
 @mark.parametrize('number_of_creation', [8])
 def test_input_annotation_annotation_loneliness(number_of_creation: int):
-    annotations = tuple(InputAnnotationAnnotation() for _ in range(number_of_creation))
+    annotations = tuple(_InputAnnotationAnnotation() for _ in range(number_of_creation))
 
     for first_annotation_index in range(number_of_creation):
         for second_annotation in annotations[first_annotation_index + 1:]:
@@ -32,10 +32,10 @@ def test_input_annotation_annotation_loneliness(number_of_creation: int):
 
 @mark.parametrize(
     "type_to_group",
-    [int, float, int | float, Union[set, frozenset], Optional[tuple], InputAnnotationAnnotation]
+    [int, float, int | float, Union[set, frozenset], Optional[tuple], _InputAnnotationAnnotation]
 )
 def test_input_annotation_annotation_grouping(type_to_group: type):
-    annotation = InputAnnotationAnnotation()
+    annotation = _InputAnnotationAnnotation()
 
     assert annotation | type_to_group == Union[annotation, type_to_group]
     assert type_to_group | annotation == Union[type_to_group | annotation]
@@ -58,6 +58,27 @@ def test_input_annotation_annotation_grouping(type_to_group: type):
             str,
             Callable[[str], Optional[str]]
         ),
+        (
+            AnnotationTemplate(
+                Callable,
+                [[AnnotationTemplate(Iterable, [input_annotation])], Any]
+            ),
+            int,
+            Callable[[Iterable[int]], Any]
+        ),
+        (
+            AnnotationTemplate(
+                Callable,
+                [[AnnotationTemplate(Iterable, [input_annotation])], Iterable[int]]
+            ),
+            int,
+            Callable[[Iterable[int]], Iterable[int]]
+        ),
+        (
+            AnnotationTemplate(Iterable, [input_annotation | Ellipsis]),
+            Literal[256],
+            Iterable[Literal[256] | Ellipsis]
+        ),
     ]
 )
 def test_annotation_template(annotation_template: AnnotationTemplate, input_resource: Any, result: Any):
@@ -70,3 +91,19 @@ def test_annotation_template(annotation_template: AnnotationTemplate, input_reso
 )
 def test_special(input_resource: Any, result: Any):
     assert Special[input_resource] == result
+
+
+@mark.parametrize(
+    "subgroup, instance, result_of_checking",
+    [
+        (Subgroup(object, lambda _: True), 1, True),
+        (Subgroup(object, lambda _: True), None, True),
+        (Subgroup(object, lambda _: False), 256, False),
+        (Subgroup(int, lambda number: number > 0), 5, True),
+        (Subgroup(int, lambda number: number > 0), -42, False),
+        (Subgroup(int, lambda number: number > 0), 6.4, False),
+        (Subgroup(int | float, lambda number: number > 0), 6.4, True),
+    ]
+)
+def test_subgroup(subgroup: Subgroup, instance: Any, result_of_checking: bool):
+    assert isinstance(instance, subgroup) is (instance in subgroup) is result_of_checking
