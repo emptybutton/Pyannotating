@@ -22,6 +22,6 @@ setup(
     author_email="s9339307190@gmail.com",
     python_requires='>=3.11',
     classifiers=["Programming Language :: Python :: 3.11"],
-    keywords=['library', 'annotations', 'generation', 'templating', 'annotations', 'informing'],
+    keywords=["library", "annotations", "generation", "templating", "annotations", "informing", "code-readability"],
     py_modules=[PACKAGE_NAME]
 )
