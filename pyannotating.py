@@ -71,14 +71,6 @@ class AnnotationTemplate(_AnnotationFactory):
         self._original_factory = original_factory
         self._annotations = tuple(annotations)
 
-    @property
-    def original_factory(self) -> Mapping:
-        return self._original_factory
-
-    @property
-    def annotations(self) -> tuple:
-        return self._annotations
-
     def __repr__(self) -> str:
         return "{factory}{arguments}".format(
             factory=(
