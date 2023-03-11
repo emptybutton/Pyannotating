@@ -4,7 +4,7 @@ from typing import Optional, Any, Union, Iterable, Self, Mapping, Final, Callabl
 
 
 
-class AnnotationFactory(ABC):
+class _AnnotationFactory(ABC):
     """
     Annotation factory class.
     Creates annotation by input other.
@@ -27,7 +27,7 @@ class AnnotationFactory(ABC):
         """Annotation Creation Method from an input annotation."""
 
 
-class InputAnnotationAnnotation:
+class _InputAnnotationAnnotation:
     """
     Singleton class for the annotation of the conditional empty space, in which
     the input type in the CustomAnnotationFactory should be placed.
@@ -53,12 +53,12 @@ class InputAnnotationAnnotation:
         return Union[other, self]
 
 
-class AnnotationTemplate(AnnotationFactory):
+class AnnotationTemplate(_AnnotationFactory):
     """
-    AnnotationFactory class delegating the construction of another factory's
+    _AnnotationFactory class delegating the construction of another factory's
     annotation.
 
-    When called, replaces the InputAnnotationAnnotation instances from its
+    When called, replaces the _InputAnnotationAnnotation instances from its
     arguments and their subcollections with the input annotation.
 
     Templateizes Union.
@@ -199,7 +199,7 @@ class Special:
 number: Final = int | float | complex
 
 # Pre-created instance without permanent formal creation of a new one.
-input_annotation: Final[InputAnnotationAnnotation] = InputAnnotationAnnotation()
+input_annotation: Final[_InputAnnotationAnnotation] = _InputAnnotationAnnotation()
 
 
 many_or_one: Final[AnnotationTemplate] = AnnotationTemplate(
