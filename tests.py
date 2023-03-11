@@ -91,3 +91,19 @@ def test_annotation_template(annotation_template: AnnotationTemplate, input_reso
 )
 def test_special(input_resource: Any, result: Any):
     assert Special[input_resource] == result
+
+
+@mark.parametrize(
+    "subgroup, instance, result_of_checking",
+    [
+        (Subgroup(object, lambda _: True), 1, True),
+        (Subgroup(object, lambda _: True), None, True),
+        (Subgroup(object, lambda _: False), 256, False),
+        (Subgroup(int, lambda number: number > 0), 5, True),
+        (Subgroup(int, lambda number: number > 0), -42, False),
+        (Subgroup(int, lambda number: number > 0), 6.4, False),
+        (Subgroup(int | float, lambda number: number > 0), 6.4, True),
+    ]
+)
+def test_subgroup(subgroup: Subgroup, instance: Any, result_of_checking: bool):
+    assert isinstance(instance, subgroup) is (instance in subgroup) is result_of_checking
