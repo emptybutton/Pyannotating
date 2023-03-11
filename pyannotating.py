@@ -112,7 +112,7 @@ class AnnotationTemplate(_AnnotationFactory):
         formatted_annotations = list()
 
         for annotation in annotations:
-            if isinstance(annotation, InputAnnotationAnnotation):
+            if isinstance(annotation, _InputAnnotationAnnotation):
                 annotation = replacement_annotation
 
             elif isinstance(annotation, list):
