@@ -200,6 +200,41 @@ class Special:
         return annotation_resource[1]
 
 
+_BasicT = TypeVar("_BasicT")
+
+
+class Subgroup(Generic[_BasicT]):
+    """
+    Class for defining a subgroup in an already existing type.
+
+    Delegates the definition of a subgroup from a particular type to
+    `determinant` attribute.
+    """
+
+    def __init__(self, type_: Type[_BasicT], determinant: Callable[[_BasicT], bool]):
+        self._type = type_
+        self._determinant = determinant
+
+    @property
+    def type_(self) -> Type[_BasicT]:
+        return self._type
+
+    @property
+    def determinant(self) -> Callable[[_BasicT], bool]:
+        return self._determinant
+
+    def __instancecheck__(self, instance: Any) -> bool:
+        return self._has(instance)
+
+    def __contains__(self, object_: Any) -> bool:
+        return self._has(object_)
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} of {self._type.__name__}>"
+
+    def _has(self, object_: Any) -> bool:
+        return isinstance(object_, self.type_) and self._determinant(object_)
+
 
 # Pre-created instance without permanent formal creation of a new one.
 input_annotation: Final[_InputAnnotationAnnotation] = _InputAnnotationAnnotation()
