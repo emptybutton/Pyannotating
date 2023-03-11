@@ -1,4 +1,4 @@
-from typing import Any, Union, Optional, Callable, Iterable, Sized
+from typing import Any, Union, Optional, Callable, Iterable, Literal, Sized
 
 from pytest import mark
 
@@ -57,6 +57,27 @@ def test_input_annotation_annotation_grouping(type_to_group: type):
             ),
             str,
             Callable[[str], Optional[str]]
+        ),
+        (
+            AnnotationTemplate(
+                Callable,
+                [[AnnotationTemplate(Iterable, [input_annotation])], Any]
+            ),
+            int,
+            Callable[[Iterable[int]], Any]
+        ),
+        (
+            AnnotationTemplate(
+                Callable,
+                [[AnnotationTemplate(Iterable, [input_annotation])], Iterable[int]]
+            ),
+            int,
+            Callable[[Iterable[int]], Iterable[int]]
+        ),
+        (
+            AnnotationTemplate(Iterable, [input_annotation | Ellipsis]),
+            Literal[256],
+            Iterable[Literal[256] | Ellipsis]
         ),
     ]
 )
