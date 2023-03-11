@@ -69,6 +69,12 @@ class AnnotationTemplate(_AnnotationFactory):
 
     Templateizes Union.
 
+    Recognize nesting of annotations only by `list` i.e
+    ```
+    AnnotationTemplate(Callable, [[input_annotation], Any]) # works
+    AnnotationTemplate(Callable, [(input_annotation, ), Any]) # does not work
+    ```
+
     Delegates responsibilities to other templates when passing them as
     annotations.
     """
@@ -109,7 +115,7 @@ class AnnotationTemplate(_AnnotationFactory):
             if isinstance(annotation, InputAnnotationAnnotation):
                 annotation = replacement_annotation
 
-            elif isinstance(annotation, Iterable) and not isinstance(annotation, str):
+            elif isinstance(annotation, list):
                 annotation = self.__get_formatted_annotations_from(
                     annotation,
                     replacement_annotation
