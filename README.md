@@ -1,6 +1,5 @@
 ## Pyannotating
-Allows you to structure your annotations and put more information into them.<br>
-Templates created with this library should preferably be placed in the annotations.py file.
+Structures your annotations and puts more information into them.
 
 ### Installation
 `pip install pyannotating`
