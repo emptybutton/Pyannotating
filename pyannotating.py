@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any, Union, Iterable, Self, Mapping, Final, Callable, _UnionGenericAlias
+from typing import Optional, Any, Union, Iterable, Self, Protocol, Final, TypeVar, Generic, Type, Callable, _UnionGenericAlias
 
 
 
