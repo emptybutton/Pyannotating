@@ -185,7 +185,7 @@ class Special:
     """
 
     def __class_getitem__(cls, annotation_resource: tuple[Any, Any] | Any) -> Any:
-        if not isinstance(annotation_resource, Iterable):
+        if not isinstance(annotation_resource, tuple):
             return Any
 
         elif len(annotation_resource) != 2:
