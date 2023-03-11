@@ -53,6 +53,12 @@ class _InputAnnotationAnnotation:
         return Union[other, self]
 
 
+class _ItemStorage(Protocol):
+    @abstractmethod
+    def __getitem__(self, key: Any) -> Any:
+        pass
+
+
 class AnnotationTemplate(_AnnotationFactory):
     """
     _AnnotationFactory class delegating the construction of another factory's
@@ -67,8 +73,8 @@ class AnnotationTemplate(_AnnotationFactory):
     annotations.
     """
 
-    def __init__(self, original_factory: Mapping, annotations: Iterable):
         self._original_factory = original_factory
+    def __init__(self, factory: _ItemStorage, annotations: list):
         self._annotations = tuple(annotations)
 
     def __repr__(self) -> str:
